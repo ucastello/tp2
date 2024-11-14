@@ -55,8 +55,8 @@ public class Heap<T extends Comparable<T>> {
     
     private void subir (int i){
         while (i >1 && (comparador.compare(data.get(i), data.get(i/2))>0)){             
-            intercambiar(i, i/2);
-            i = i/2;
+            intercambiar(i, (i-1)/2);
+            i = (i-1)/2;
         }
         if (comparador.compare(data.get(1), data.get(0))>0){                
             intercambiar(1, 0);
@@ -85,7 +85,7 @@ public class Heap<T extends Comparable<T>> {
             if (hijosConMasPrioridad(i)){
                 bajar(i);
             }
-            else if (comparador.compare(data.get(i), data.get(i/2)) > 0){              //si quiero eliminar la raiz a este else no entra nunca, creo que no habria problema igual
+            else if (comparador.compare(data.get(i), data.get((i-1)/2)) > 0){              //si quiero eliminar la raiz a este else no entra nunca, creo que no habria problema igual
                 subir(i);
             }
         }

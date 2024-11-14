@@ -16,13 +16,13 @@ public class HeapTest {
     void setUp(){
     Comparator<Integer> comp = Integer::compare;
     ArrayList<Integer> info = new ArrayList<>();
-    info.data(3);
-    info.data(8);
-    info.data(2);
-    info.data(6);
-    info.data(5);
-    info.data(1);
-    Heap = new main.java.aed.Heap<>(info, comp); 
+    info.add(3);
+    info.add(8);
+    info.add(2);
+    info.add(6);
+    info.add(5);
+    info.add(1);
+    Heap = new Heap<Integer>(info, comp); 
 
     }
 
