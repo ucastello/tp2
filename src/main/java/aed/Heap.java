@@ -1,12 +1,12 @@
-package main.java.aed;
+package aed;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class Heap<T extends Comparable<T>> {
-    private ArrayList data;
+    private ArrayList<T> data;
     private int ultimo;
-    private Comparator comparador;
+    private Comparator<T> comparador;
     
     private void Heapify(){
         int i = data.size()/2-1;
@@ -17,30 +17,30 @@ public class Heap<T extends Comparable<T>> {
     }
 
     private Boolean esHoja(int indice){
-        return (2*indice > (data.size()-1)|| 2*indice +1 > (data.size()-1));
+        return (2*indice+1 > (data.size()-1));
     }
 
     private void intercambiar (int Indice1,int Indice2){
-        T num = new data.get(Indice1);
+        T num = data.get(Indice1);
         data.set(Indice1, data.get(Indice2));
         data.set(Indice2, num);
     }
 
     private Boolean hijosConMasPrioridad (int indice){                                          // devuelve True si tiene algun hijo con mas prioridad
-        if ( 2*indice+1 > (data.size()-1)){
-            return (comparador.compare(data.get(indice), data.get(2*indice)) < 0);
+        if ( 2*indice+2 > (data.size()-1)){
+            return (comparador.compare(data.get(indice), data.get(2*indice+1)) < 0);
         }
         else{
-            return ((comparador.compare(data.get(indice), data.get(2*indice)) < 0) || (comparador.compare(data.get(indice), data.get(2*indice + 1)) < 0));
+            return ((comparador.compare(data.get(indice), data.get(2*indice+1)) < 0) || (comparador.compare(data.get(indice), data.get(2*indice + 2)) < 0));
         }
     }
 
     private int hijoMayorPrioridad (int indice){
-        int res = 2*indice;
-        if (2*i+1 > (data.size()-1)){
+        int res = 2*indice+1;
+        if (2*indice+2 >= (data.size()-1)){
             return res;
-        } else if (comparador.compare(data.get(2*indice), data.get(2*indice+1))<0){
-            res = 2*indice +1;
+        } else if (comparador.compare(data.get(2*indice+1), data.get(2*indice+2))<0){
+            res = 2*indice +2;
         }
         return res;
     }
@@ -63,11 +63,22 @@ public class Heap<T extends Comparable<T>> {
         }
     }
 
-    public Heap (ArrayList info, Comparator com){
+    public Heap (ArrayList<T> info, Comparator<T> com){
         comparador = com;
-        data = ArrayList(info);
+        data = info;
         ultimo = data.size()-1;
-        Heapify(data);
+        this.Heapify();
+    }
+
+    public Heap (Heap<T> h, Comparator<T> comp){
+        comparador = comp;
+        ultimo = h.longitud()-1;
+        data = new ArrayList<T>();
+        int i = 0;
+        while (i <= ultimo){
+            data.addLast(h.obtener(i));
+            i++;
+        }
     }
 
     public T maximo (){
@@ -79,6 +90,10 @@ public class Heap<T extends Comparable<T>> {
         if (i == ultimo){
             data.remove(i);
         }
+        else if (esHoja(i)){
+            intercambiar(i, ultimo);
+            data.remove(ultimo);
+        }
         else{
             intercambiar(i, ultimo);
             data.remove(ultimo);
@@ -89,8 +104,19 @@ public class Heap<T extends Comparable<T>> {
                 subir(i);
             }
         }
-        ultimo = data.size();
+        ultimo = data.size()-1;
         return res;
+    }
+    public int longitud(){
+        return data.size();
+    }
+    public T obtener(int indice){
+        return data.get(indice);
+    }
+    public void agregar (T elem){
+        data.add(ultimo+1,elem);
+        ultimo +=1;
+        subir(ultimo);
     }
 }
 
