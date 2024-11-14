@@ -3,10 +3,25 @@ package aed;
 import java.util.ArrayList;
 
 public class BestEffort {
-    //Completar atributos privados
+    private Integer[][] ciudades;
+    private Integer [] masGanancia;
+    private Integer [] masPerdida;
 
     public BestEffort(int cantCiudades, Traslado[] traslados){
-        // Implementar
+        ciudades = new Integer[cantCiudades][];
+        masGanancia = new Integer[cantCiudades];
+        masPerdida = new Integer[cantCiudades];
+        int i = 0;
+        while (i < cantCiudades) {                                                        // O(|C|)
+            Integer [] infoCiudad = new Integer[3];                                       // los elementos que van a ciudades son de la pinta[ganancia,perdida, puntero a superavit(al principio se ordenan por posicion)]  
+            infoCiudad[0] = 0;
+            infoCiudad[1] = 0;
+            infoCiudad[3] = i;
+            ciudades[i] = infoCiudad;
+            masGanancia[i] = i;
+            masPerdida[i] = i;
+            i++;
+        }
     }
 
     public void registrarTraslados(Traslado[] traslados){
