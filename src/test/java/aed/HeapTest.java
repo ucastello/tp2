@@ -30,6 +30,29 @@ public class HeapTest {
     }
 
 
+    private boolean pertenece (Heap<Integer> h, Integer elem){
+        boolean res = false;
+        int i = 0;
+        while (i < h.longitud()) {
+            if (h.obtener(i) == elem){
+                res = true;
+            }
+            i++;
+        }
+        return res;
+    }
+
+    private boolean esColaDePrioridad (Heap<Integer> h){
+        boolean res = true;
+        Integer elemAnterior =h.eliminarPosicion(0);
+        while (h.longitud()>0) {
+            if (h.obtener(0)> elemAnterior){
+                res = false;
+            }
+            elemAnterior = h.eliminarPosicion(0);
+        }
+        return res;
+    }
 
     @Test 
     void vacio(){
@@ -49,6 +72,7 @@ public class HeapTest {
             assertTrue(oldHeap.obtener(0)>Heap.obtener(i));
             i++;
         }
+        assertTrue(esColaDePrioridad(Heap));
     }
 
     @Test
@@ -60,17 +84,10 @@ public class HeapTest {
         int i = 1;
         while (i < Heap.longitud()) {
             Integer elem = Heap.obtener(i);
-            int j = 0;
-            boolean res = false;
-            while (j <oldHeap.longitud()) {
-                if (oldHeap.obtener(j) == elem){
-                    res = true;
-                }
-            j++;
-            }
-            assertTrue(res);
+            assertTrue(pertenece(oldHeap, elem));
             i++;
         }
+        assertTrue(esColaDePrioridad(Heap));
     }
 
     @Test
@@ -80,14 +97,8 @@ public class HeapTest {
         Integer elem2 =Heap.obtener(Heap.longitud()/2);
         Heap.eliminarPosicion(Heap.longitud()/2);
 
-        int i = 0;
-        boolean res = true;
-        while (i<Heap.longitud()) {
-            if (Heap.obtener(i) == elem1 || Heap.obtener(i)==elem2){
-                res = false;
-            }
-            i++;
-        }
-        assertTrue(res);
+        assertFalse(pertenece(Heap, elem1));
+        assertFalse(pertenece(Heap, elem2));
+        assertTrue(esColaDePrioridad(Heap));
     }
 }
