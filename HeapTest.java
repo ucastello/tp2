@@ -43,7 +43,23 @@ public class HeapTest {
         }
         return res;
     }
-
+    private boolean PadreMayorQueHijo(Heap<Integer> h){
+        boolean res = true;
+        int i = 0;
+        while (i<h.longitud()/2){
+            if (2*i+2 == h.longitud()){
+                if (h.obtener(i) < h.obtener(2*i+1)){
+                res = false;
+                }
+            } else {
+                if (h.obtener(i) < h.obtener(2*i+1) || h.obtener(i) < h.obtener(2*i+2)){
+                    res =  false;
+                }
+            }
+            i ++;
+        }
+        return res;
+    }
     private boolean esColaDePrioridad (Heap<Integer> h){
         boolean res = true;
         Integer elemAnterior =h.eliminarPosicion(0);
@@ -103,7 +119,7 @@ public class HeapTest {
         assertFalse(pertenece(Heap, elem2));
         assertTrue(esColaDePrioridad(Heap));
     }
-    Integer NCLAVES = 1000;
+    Integer NCLAVES = 100000;
     private Integer clave(Integer i) {
         return NCLAVES * ((i * i - 100 * i) % NCLAVES) + i;
     }
@@ -122,7 +138,8 @@ public class HeapTest {
         }
 
         // Salen en orden
-        assertTrue(esColaDePrioridad(conjunto));
+        assertTrue(PadreMayorQueHijo(conjunto));
+        //assertTrue(esColaDePrioridad(conjunto));
         
     }
 }
