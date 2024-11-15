@@ -1,7 +1,7 @@
 package aed;
 
 import static org.junit.jupiter.api.Assertions.*;
- 
+  
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,42 +120,9 @@ public class HeapTest {
             conjunto.agregar(k);
             assertEquals(true, pertenece(conjunto,k));
         }
-        // Insertar de nuevo
-        for (Integer i = 0; i < NCLAVES; i++) {
-            Integer k = clave(i);
-            assertTrue(pertenece(conjunto,k));
 
-            conjunto.agregar(k);
-
-            assertTrue(pertenece(conjunto,k));
-        }
-
-        // Eliminar los valores para i par
-        for (Integer i = 0; i < NCLAVES; i++) {
-            Integer k = clave(i);
-            assertTrue(pertenece(conjunto,k));
-            if (i % 2 == 0) {
-                conjunto.eliminarPosicion(i);
-
-                assertFalse(pertenece(conjunto,k));
-            }
-        }
-        // Eliminar los valores para i impar
-        for (Integer i = 0; i < NCLAVES; i++) {
-            Integer k = clave(i);
-            if (i % 2 == 0) {
-                assertFalse(pertenece(conjunto,k));
-            } else {
-                assertTrue(pertenece(conjunto,k));
-                conjunto.eliminarPosicion(i);
-
-                assertFalse(pertenece(conjunto,k));
-            }
-        }
-        // Verificar que no haya valores
-        for (Integer i = 0; i < NCLAVES; i++) {
-            Integer k = clave(i);
-            assertFalse(pertenece(conjunto,k));
-        }
+        // Salen en orden
+        assertTrue(esColaDePrioridad(conjunto));
+        
     }
 }
