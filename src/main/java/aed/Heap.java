@@ -3,7 +3,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class Heap<T extends Comparable<T>> {
+public class Heap<T> {
     private ArrayList<T> data;
     private int ultimo;
     private Comparator<T> comparador;
