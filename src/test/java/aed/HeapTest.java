@@ -139,7 +139,7 @@ public class HeapTest {
 
         // Salen en orden
         assertTrue(PadreMayorQueHijo(conjunto));
-        //assertTrue(esColaDePrioridad(conjunto));
+        assertTrue(esColaDePrioridad(conjunto));
         
     }
 }

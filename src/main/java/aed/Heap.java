@@ -77,7 +77,7 @@ public class Heap<T> {
         
     }
     public void modificarElem (Integer indice, T elem){
-        data.add(indice, elem);
+        data.set(indice, elem);
     }
         
     private void Heapify(){
