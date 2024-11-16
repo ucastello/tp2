@@ -46,7 +46,7 @@ public class Heap<T> {
         else{
             intercambiar(i, ultimo);
             data.remove(ultimo);
-            if (hijosConMasPrioridad(i)){
+            if (!esHoja(i) && hijosConMasPrioridad(i)){
                 bajar(i);
             }
             else if (comparador.compare(data.get(i), data.get((i-1)/2)) > 0){              //si quiero eliminar la raiz a este else no entra nunca, creo que no habria problema igual
@@ -80,7 +80,7 @@ public class Heap<T> {
         data.set(indice, elem);
     }
 
-    public ArrayList<T> heapALista(){                                          //devuelve una lista con elementos con aliasing             
+    public ArrayList<T> heapALista(){                                          //devuelve una lista con elementos con aliasing [en O(n)]             
         ArrayList <T> res = new ArrayList<>();
         int i = 0;
         while ( i < this.data.size()) {
