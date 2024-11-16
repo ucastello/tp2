@@ -94,7 +94,7 @@ public class BestEffort {
     public int[] despacharMasRedituables(int n){
         int [] res = new int [n];
         int i = 0;
-        while (i < n || (trasladoRedituabilidad.longitud() == 0)) {
+        while (i < n && (trasladoRedituabilidad.longitud() != 0)) {
             TuplaDeInfo despacho = trasladoRedituabilidad.eliminarPosicion(0);
             trasladoAntiguedad.eliminarPosicion(despacho.antig);
             res[i] = despacho.infotras.id;
@@ -131,8 +131,7 @@ public class BestEffort {
     }
 
     public int gananciaPromedioPorTraslado(){
-        // Implementar
-        return 0;
+        return trasladosYGananciasHistoricas[1]/trasladosYGananciasHistoricas[0];
     }
 
     private void actualizarBalances(Traslado t){
