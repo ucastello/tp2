@@ -40,17 +40,17 @@ public class BestEffort {
 
         mayorSuperavit = new Heap<Integer[]>(new ArrayList<Integer[]>(),porSuperavit);
 
-        while (i < cantCiudades) {                                                                                       // O(|C|)
-            balanceCiudad infoCiudad = new balanceCiudad(i,0, 0);                                       // los elementos que van a ciudades son de la pinta[ganancia,perdida, puntero a superavit(al principio se ordenan por posicion)]  
-            ciudades[i] = infoCiudad;
-            masGanancia[i] = i;                                                            
-            masPerdida[i] = i;
-            Integer [] superavit = new Integer[2];
-            superavit[0] = i;
-            superavit [1] = 0;                                                          
-            mayorSuperavit.agregar(superavit);                                            //los elementos no se mueven, asi que esto es O(1)
-            i++;
-        }
+        // while (i < cantCiudades) {                                                                                       // O(|C|)
+        //     balanceCiudad infoCiudad = new balanceCiudad(i,0, 0);                                       // los elementos que van a ciudades son de la pinta[ganancia,perdida, puntero a superavit(al principio se ordenan por posicion)]  
+        //     ciudades[i] = infoCiudad;
+        //     masGanancia[i] = i;                                                            
+        //     masPerdida[i] = i;
+        //     Integer [] superavit = new Integer[2];
+        //     superavit[0] = i;
+        //     superavit [1] = 0;                                                          
+        //     mayorSuperavit.agregar(superavit);                                            //los elementos no se mueven, asi que esto es O(1)
+        //     i++;
+        // }
         i = 0;
         ArrayList<TuplaDeInfo> trasladosConInfo = new ArrayList<TuplaDeInfo>();            //Creo el array para luego pasarlo a Heap
         while (i < traslados.length){                                                      //O(|T|)
@@ -58,15 +58,23 @@ public class BestEffort {
             trasladosConInfo.add(trasladoConPunteros);
             i++;
         }
-        i = 0;
 
         ComparadorAntiguedad antiguedad = new ComparadorAntiguedad();
 
         trasladoAntigueadad = new Heap<>(trasladosConInfo,antiguedad);
+        i = 0;
+        while (i < trasladoAntigueadad.longitud()) {                                                                                                //pueden existir punteros que no se cambien en el heapify,asi que aca lo cambiamos
+            trasladoAntigueadad.obtener(i).modificarTupla(trasladoAntigueadad.obtener(i).infotras, i, trasladoAntigueadad.obtener(i).redit);
+            i++;
+        }
 
         ComparadorRedituabilidad redituabilidad = new ComparadorRedituabilidad();
+        trasladoRedituabilidad = new Heap<>(trasladoAntigueadad.heapALista(),redituabilidad);                   //obtengo la lista con los punteros acutalizado
         i = 0;
-        trasladoRedituabilidad = new Heap<>(trasladosConInfo,redituabilidad);
+        while (i < trasladoRedituabilidad.longitud()) {
+            trasladoRedituabilidad.obtener(i).modificarTupla(trasladoRedituabilidad.obtener(i).infotras, trasladoRedituabilidad.obtener(i).antig,i);
+            i++;
+        }
 
         trasladosYGananciasHistoricas = new Integer[2];
         trasladosYGananciasHistoricas[0] = 0;

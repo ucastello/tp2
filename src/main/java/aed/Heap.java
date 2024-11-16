@@ -10,7 +10,7 @@ public class Heap<T> {
 
     public Heap (ArrayList<T> info, Comparator<T> com){
         comparador = com;
-        data = new ArrayList<T>(info);
+        data = info;
         ultimo = data.size()-1;
         this.Heapify();
     }
@@ -79,6 +79,16 @@ public class Heap<T> {
     public void modificarElem (Integer indice, T elem){
         data.set(indice, elem);
     }
+
+    public ArrayList<T> heapALista(){                                          //devuelve una lista con elementos con aliasing             
+        ArrayList <T> res = new ArrayList<>();
+        int i = 0;
+        while ( i < this.data.size()) {
+            res.add(this.data.get(i));
+            i++;
+        }
+        return res;
+    }
         
     private void Heapify(){
         int i = data.size()/2-1;
@@ -99,17 +109,17 @@ public class Heap<T> {
             TuplaDeInfo numAInfo1 = (TuplaDeInfo) num1; 
             TuplaDeInfo numAInfo2 = (TuplaDeInfo) num2;
             if (ordenadoPorAntiguedad()){
-                TuplaDeInfo actualizacion1 = new TuplaDeInfo (numAInfo1.infotras, Indice2,numAInfo1.redit);
-                TuplaDeInfo actualizacion2 = new TuplaDeInfo(numAInfo2.infotras,Indice1, numAInfo2.redit);
-                T numAct1 = (T) actualizacion1;
-                T numAct2 = (T) actualizacion2;
+                numAInfo1.modificarTupla(numAInfo1.infotras, Indice2,numAInfo1.redit);
+                numAInfo2.modificarTupla(numAInfo2.infotras,Indice1, numAInfo2.redit);
+                T numAct1 = (T) numAInfo1;
+                T numAct2 = (T) numAInfo2;
                 data.set(Indice1, numAct2);
                 data.set(Indice2, numAct1);
             } else{
-                TuplaDeInfo actualizacion1 = new TuplaDeInfo (numAInfo1.infotras, numAInfo1.antig,Indice2);
-                TuplaDeInfo actualizacion2 = new TuplaDeInfo(numAInfo2.infotras,numAInfo1.antig, Indice1);
-                T numAct1 = (T) actualizacion1;
-                T numAct2 = (T) actualizacion2;
+                numAInfo1.modificarTupla(numAInfo1.infotras, numAInfo1.antig,Indice2);
+                numAInfo2.modificarTupla(numAInfo2.infotras,numAInfo2.antig, Indice1);
+                T numAct1 = (T) numAInfo1;
+                T numAct2 = (T) numAInfo2;
                 data.set(Indice1, numAct2);
                 data.set(Indice2, numAct1);
             }
@@ -163,14 +173,7 @@ public class Heap<T> {
         return false;
     }
     private boolean ordenadoPorAntiguedad (){
-        Comparator<TuplaDeInfo> ejemplo = new Comparator<TuplaDeInfo>(){
-            public int compare (TuplaDeInfo elem1, TuplaDeInfo elem2){
-                if (elem1.infotras.timestamp < elem2.infotras.timestamp){
-                    return 1;
-                }
-                return -1;
-            }
-        };
+        ComparadorAntiguedad ejemplo = new ComparadorAntiguedad();
         if (this.comparador.getClass() == ejemplo.getClass()){
             return true;
         }
