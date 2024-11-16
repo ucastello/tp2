@@ -9,19 +9,8 @@ public class BestEffort {
     private Integer [] masPerdida;
     private Integer [] trasladosYGananciasHistoricas;                                      //Lista con dos elementos donde el primero refiere a la cantidad de traslados que se hicieron y el segundo a las ganancias totales
     private Heap<Integer[]> mayorSuperavit;
-    private Heap<tuplaDeInfo> trasladoAntigueadad;
-    private Heap<tuplaDeInfo> trasladoRedituabilidad;
-
-    public class tuplaDeInfo {
-        Traslado infotras;
-        Integer redit;
-        Integer antig;
-        public tuplaDeInfo (Traslado t, Integer antiguedad,Integer redituabilidad){
-            this.infotras = t;
-            this.antig = antiguedad;
-            this.redit = redituabilidad;
-        }
-    }
+    private Heap<TuplaDeInfo> trasladoAntigueadad;
+    private Heap<TuplaDeInfo> trasladoRedituabilidad;
 
     public class balanceCiudad {
         Integer punteroASuperavit;
@@ -63,46 +52,22 @@ public class BestEffort {
             i++;
         }
         i = 0;
-        ArrayList<tuplaDeInfo> trasladosConInfo = new ArrayList<tuplaDeInfo>();            //Creo el array para luego pasarlo a Heap
+        ArrayList<TuplaDeInfo> trasladosConInfo = new ArrayList<TuplaDeInfo>();            //Creo el array para luego pasarlo a Heap
         while (i < traslados.length){                                                      //O(|T|)
-            tuplaDeInfo trasladoConPunteros = new tuplaDeInfo(traslados[i],i,i);
+            TuplaDeInfo trasladoConPunteros = new TuplaDeInfo(traslados[i],i,i);
             trasladosConInfo.add(trasladoConPunteros);
             i++;
         }
         i = 0;
 
-        Comparator<tuplaDeInfo> antiguedad = new Comparator<tuplaDeInfo>(){
-            public int compare (tuplaDeInfo elem1, tuplaDeInfo elem2){
-                if (elem1.infotras.timestamp < elem2.infotras.timestamp){
-                    return 1;
-                }
-                return -1;
-            }
-        };
+        ComparadorAntiguedad antiguedad = new ComparadorAntiguedad();
 
         trasladoAntigueadad = new Heap<>(trasladosConInfo,antiguedad);
-        while (i < trasladoAntigueadad.longitud()){                                                                                                                      //O(|T|)
-            tuplaDeInfo tuplaActualizada= new tuplaDeInfo(trasladoAntigueadad.obtener(i).infotras,i, trasladoAntigueadad.obtener(i).redit);                         //solo cambio la info de antiguedad
-            trasladoAntigueadad.modificarElem(i, tuplaActualizada);
-            i++;
-        }
 
-        Comparator<tuplaDeInfo> redituabilidad = new Comparator<tuplaDeInfo>(){
-            public int compare (tuplaDeInfo elem1, tuplaDeInfo elem2){
-                if ((elem1.infotras.gananciaNeta > elem2.infotras.gananciaNeta) || (elem1.infotras.gananciaNeta == elem2.infotras.gananciaNeta && elem1.infotras.id < elem2.infotras.id)){
-                    return 1;
-                }
-                return -1;
-            }
-        };
-
+        ComparadorRedituabilidad redituabilidad = new ComparadorRedituabilidad();
         i = 0;
         trasladoRedituabilidad = new Heap<>(trasladosConInfo,redituabilidad);
-        while (i < trasladoRedituabilidad.longitud()){
-            tuplaDeInfo tuplaActualizada= new tuplaDeInfo(trasladoRedituabilidad.obtener(i).infotras,trasladoRedituabilidad.obtener(i).antig, i);                         
-            trasladoRedituabilidad.modificarElem(i, tuplaActualizada);
-            i++;
-        }
+
         trasladosYGananciasHistoricas = new Integer[2];
         trasladosYGananciasHistoricas[0] = 0;
         trasladosYGananciasHistoricas[1] = 0;
@@ -111,8 +76,10 @@ public class BestEffort {
     public void registrarTraslados(Traslado[] traslados){
         int i = 0;
         while (i < traslados.length){
-            tuplaDeInfo traslado = new tuplaDeInfo(traslados[i], trasladoAntigueadad.longitud(), trasladoRedituabilidad.longitud());
-            
+            TuplaDeInfo traslado = new TuplaDeInfo(traslados[i], trasladoAntigueadad.longitud(), trasladoRedituabilidad.longitud());
+            trasladoAntigueadad.agregar(traslado);
+            trasladoRedituabilidad.agregar(traslado);
+            i++;
         }
     }
 

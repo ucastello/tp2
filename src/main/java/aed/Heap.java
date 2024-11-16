@@ -10,7 +10,7 @@ public class Heap<T> {
 
     public Heap (ArrayList<T> info, Comparator<T> com){
         comparador = com;
-        data = new ArrayList<>(info);
+        data = new ArrayList<T>(info);
         ultimo = data.size()-1;
         this.Heapify();
     }
@@ -93,9 +93,30 @@ public class Heap<T> {
     }
 
     private void intercambiar (int Indice1,int Indice2){
-        T num = data.get(Indice1);
-        data.set(Indice1, data.get(Indice2));
-        data.set(Indice2, num);
+        T num1 = data.get(Indice1);
+        T num2 = data.get(Indice2);
+        if (esTraslado(num1)){
+            TuplaDeInfo numAInfo1 = (TuplaDeInfo) num1; 
+            TuplaDeInfo numAInfo2 = (TuplaDeInfo) num2;
+            if (ordenadoPorAntiguedad()){
+                TuplaDeInfo actualizacion1 = new TuplaDeInfo (numAInfo1.infotras, Indice2,numAInfo1.redit);
+                TuplaDeInfo actualizacion2 = new TuplaDeInfo(numAInfo2.infotras,Indice1, numAInfo2.redit);
+                T numAct1 = (T) actualizacion1;
+                T numAct2 = (T) actualizacion2;
+                data.set(Indice1, numAct2);
+                data.set(Indice2, numAct1);
+            } else{
+                TuplaDeInfo actualizacion1 = new TuplaDeInfo (numAInfo1.infotras, numAInfo1.antig,Indice2);
+                TuplaDeInfo actualizacion2 = new TuplaDeInfo(numAInfo2.infotras,numAInfo1.antig, Indice1);
+                T numAct1 = (T) actualizacion1;
+                T numAct2 = (T) actualizacion2;
+                data.set(Indice1, numAct2);
+                data.set(Indice2, numAct1);
+            }
+        } else{
+            data.set(Indice1, num2);
+            data.set(Indice2, num1);
+        }
     }
 
     private Boolean hijosConMasPrioridad (int indice){                                          // devuelve True si tiene algun hijo con mas prioridad
@@ -134,4 +155,25 @@ public class Heap<T> {
         }
     }
 
+    private boolean esTraslado (T elem){
+        TuplaDeInfo prueba = new TuplaDeInfo(null, null, null);
+        if (elem.getClass() == prueba.getClass()){
+            return true;
+        }
+        return false;
+    }
+    private boolean ordenadoPorAntiguedad (){
+        Comparator<TuplaDeInfo> ejemplo = new Comparator<TuplaDeInfo>(){
+            public int compare (TuplaDeInfo elem1, TuplaDeInfo elem2){
+                if (elem1.infotras.timestamp < elem2.infotras.timestamp){
+                    return 1;
+                }
+                return -1;
+            }
+        };
+        if (this.comparador.getClass() == ejemplo.getClass()){
+            return true;
+        }
+        return false;
+    }
 }
