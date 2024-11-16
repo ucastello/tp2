@@ -2,7 +2,7 @@ package aed;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
-
+  
 public class Heap<T> {
     private ArrayList<T> data;
     private int ultimo;
@@ -10,7 +10,7 @@ public class Heap<T> {
 
     public Heap (ArrayList<T> info, Comparator<T> com){
         comparador = com;
-        data = info;
+        data = new ArrayList<>(info);
         ultimo = data.size()-1;
         this.Heapify();
     }
@@ -21,7 +21,7 @@ public class Heap<T> {
         data = new ArrayList<T>();
         int i = 0;
         while (i <= ultimo){
-            data.addLast(h.obtener(i));
+            data.add(h.obtener(i));
             i++;
         }
     }
@@ -66,9 +66,18 @@ public class Heap<T> {
     }
 
     public void agregar (T elem){
-        data.add(ultimo+1,elem);
-        ultimo +=1;
-        subir(ultimo);
+        if (data.size()== 0){
+            data.add(0,elem);
+            ultimo += 1;
+        } else {
+            data.add(ultimo+1,elem);
+            ultimo +=1;
+            subir(ultimo);
+        }
+        
+    }
+    public void modificarElem (Integer indice, T elem){
+        data.add(indice, elem);
     }
         
     private void Heapify(){
@@ -116,7 +125,7 @@ public class Heap<T> {
     }
     
     private void subir (int i){
-        while (i >1 && (comparador.compare(data.get(i), data.get(i/2))>0)){             
+        while (i >1 && (comparador.compare(data.get(i), data.get((i-1)/2))>0)){             
             intercambiar(i, (i-1)/2);
             i = (i-1)/2;
         }
@@ -126,4 +135,3 @@ public class Heap<T> {
     }
 
 }
-

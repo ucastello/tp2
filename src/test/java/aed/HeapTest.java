@@ -1,7 +1,7 @@
 package aed;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+  
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +24,8 @@ public class HeapTest {
     info.add(5);
     info.add(6);
     info.add(1);
+    info.add(9);
+    info.add(7);
     Heap = new Heap<Integer>(info, comp); 
     oldHeap = new Heap<>(Heap, Integer::compare);
 
@@ -41,7 +43,23 @@ public class HeapTest {
         }
         return res;
     }
-
+    private boolean PadreMayorQueHijo(Heap<Integer> h){
+        boolean res = true;
+        int i = 0;
+        while (i<h.longitud()/2){
+            if (2*i+2 == h.longitud()){
+                if (h.obtener(i) < h.obtener(2*i+1)){
+                res = false;
+                }
+            } else {
+                if (h.obtener(i) < h.obtener(2*i+1) || h.obtener(i) < h.obtener(2*i+2)){
+                    res =  false;
+                }
+            }
+            i ++;
+        }
+        return res;
+    }
     private boolean esColaDePrioridad (Heap<Integer> h){
         boolean res = true;
         Integer elemAnterior =h.eliminarPosicion(0);
@@ -100,5 +118,28 @@ public class HeapTest {
         assertFalse(pertenece(Heap, elem1));
         assertFalse(pertenece(Heap, elem2));
         assertTrue(esColaDePrioridad(Heap));
+    }
+    Integer NCLAVES = 100000;
+    private Integer clave(Integer i) {
+        return NCLAVES * ((i * i - 100 * i) % NCLAVES) + i;
+    }
+
+    @Test
+    void stress() {
+
+        Heap<Integer> conjunto = new Heap<Integer>(new ArrayList<Integer>(),Integer::compare);
+
+        // Insertar
+        for (Integer i = 0; i < NCLAVES; i++) {
+            Integer k = clave(i);
+            assertEquals(false, pertenece(conjunto,k));
+            conjunto.agregar(k);
+            assertEquals(true, pertenece(conjunto,k));
+        }
+
+        // Salen en orden
+        assertTrue(PadreMayorQueHijo(conjunto));
+        //assertTrue(esColaDePrioridad(conjunto));
+        
     }
 }
