@@ -8,7 +8,7 @@ public class BestEffort {
     private ArrayList<Integer> masGanancia;
     private ArrayList<Integer> masPerdida;
     private Integer [] trasladosYGananciasHistoricas;                                      //Lista con dos elementos donde el primero refiere a la cantidad de traslados que se hicieron y el segundo a las ganancias totales
-    private Heap<Integer[]> mayorSuperavit;
+    private Heap<Integer[]> mayorSuperavit;                             
     private Heap<TuplaDeInfo> trasladoAntiguedad;
     private Heap<TuplaDeInfo> trasladoRedituabilidad;
 
@@ -31,7 +31,7 @@ public class BestEffort {
 
         Comparator<Integer[]> porSuperavit = new Comparator<Integer[]>() {                         //Esto si se puede habria que hacerlo en otro lugar
             public int compare (Integer[] elem1,Integer[] elem2){
-                if (elem1[1] > elem2[1] || ((elem1[1] == elem2[1] && elem1[0] < elem2[0]))){
+                if ((elem1[1] - elem1[2])> (elem2[1] - elem2[2]) || (((elem1[1] - elem1[2]) ==(elem2[1] - elem2[2]) && elem1[0] < elem2[0]))){
                     return 1;
                 }
                 return -1;
@@ -45,9 +45,10 @@ public class BestEffort {
             ciudades[i] = infoCiudad;
             masGanancia.add(i);                                                   
             masPerdida.add(i);
-            Integer [] superavit = new Integer[2];
+            Integer [] superavit = new Integer[3];                                         //el primer elemento refiere al id el segundo a ganancia y el tercerom a perdida
             superavit[0] = i;
-            superavit [1] = 0;                                                          
+            superavit [1] = 0;        
+            superavit [2] = 0;                                                  
             mayorSuperavit.agregar(superavit);                                            //los elementos no se mueven, asi que esto es O(1)
             i++;
         }
@@ -118,8 +119,7 @@ public class BestEffort {
     }
 
     public int ciudadConMayorSuperavit(){
-        // Implementar
-        return 0;
+        return mayorSuperavit.maximo()[0];
     }
 
     public ArrayList<Integer> ciudadesConMayorGanancia(){
@@ -156,5 +156,17 @@ public class BestEffort {
         }
         trasladosYGananciasHistoricas[0] += 1;
         trasladosYGananciasHistoricas[1] += t.gananciaNeta;
+
+        actualizarPosicionEnSuperavit(t.origen);    
+        actualizarPosicionEnSuperavit(t.destino);
+    }
+    
+    private void actualizarPosicionEnSuperavit(Integer ciudad){
+        Integer punteroCiudad = ciudades[ciudad].punteroASuperavit;
+        Integer[] ciudadActualizada = new Integer[3];
+        ciudadActualizada [0] = punteroCiudad;
+        ciudadActualizada [1] = ciudades[ciudad].gananciaHistorica;   
+        ciudadActualizada [2] = ciudades[ciudad].perdidaHistorica;
+        mayorSuperavit.modificarElem(punteroCiudad,mayorSuperavit.obtener(punteroCiudad),ciudadActualizada);
     }
 }

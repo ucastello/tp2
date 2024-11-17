@@ -76,10 +76,16 @@ public class Heap<T> {
         }
         
     }
-    public void modificarElem (Integer indice, T elem){
-        data.set(indice, elem);
+    public void modificarElem (Integer indice, T prioridadAnterior,T prioridadActual){                         //modifica un elemento en O(1) si no se cambia la prioridad 
+        data.set(indice, prioridadActual);    
+        if (comparador.compare(prioridadAnterior, prioridadActual) > 0){
+            bajar(indice);
+        }
+        else if (comparador.compare(prioridadAnterior, prioridadActual) < 0) {
+            subir(indice);   
+        } 
     }
-
+    
     public ArrayList<T> heapALista(){                                          //devuelve una lista con elementos con aliasing [en O(n)]             
         ArrayList <T> res = new ArrayList<>();
         int i = 0;
