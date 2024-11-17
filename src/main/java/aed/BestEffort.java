@@ -29,65 +29,62 @@ public class BestEffort {
         masPerdida = new ArrayList<>(cantCiudades);
         int i = 0;
 
-        Comparator<Integer[]> porSuperavit = new Comparator<Integer[]>() {                         //Esto si se puede habria que hacerlo en otro lugar
-            public int compare (Integer[] elem1,Integer[] elem2){
-                if ((elem1[1] - elem1[2])> (elem2[1] - elem2[2]) || (((elem1[1] - elem1[2]) ==(elem2[1] - elem2[2]) && elem1[0] < elem2[0]))){
-                    return 1;
-                }
-                return -1;
-            }
-        };
-
+        ComparadorSuperavit porSuperavit = new ComparadorSuperavit();
         mayorSuperavit = new Heap<Integer[]>(new ArrayList<Integer[]>(),porSuperavit);
 
-        while (i < cantCiudades) {                                                                                       // O(|C|)
-            balanceCiudad infoCiudad = new balanceCiudad(i,0, 0);                                       // los elementos que van a ciudades son de la pinta[ganancia,perdida, puntero a superavit(al principio se ordenan por posicion)]  
+        while (i < cantCiudades) {                                                         // Tiene |C| iteraciones y todas las funciones de adentro son de complejidad O(1), por lo que este while cuenta con una complejidad de O(|C|)
+            balanceCiudad infoCiudad = new balanceCiudad(i,0, 0);                              
             ciudades[i] = infoCiudad;
-            masGanancia.add(i);                                                   
-            masPerdida.add(i);
-            Integer [] superavit = new Integer[3];                                         //el primer elemento refiere al id el segundo a ganancia y el tercerom a perdida
+            masGanancia.add(i);                                                            // O(1) por ser ArrayList                                                    
+            masPerdida.add(i);                                                             // Idem     
+            Integer [] superavit = new Integer[3];                                         
             superavit[0] = i;
             superavit [1] = 0;        
-            superavit [2] = 0;                                                  
-            mayorSuperavit.agregar(superavit);                                            //los elementos no se mueven, asi que esto es O(1)
+            superavit [2] = 0;      
+            // El primer elemento refiere al id de la ciudad el segundo a ganancia y el tercero a perdida                                            
+            mayorSuperavit.agregar(superavit);                                            // debido a que los elementos van entrando de manera ordenada al heap (todos tienen el mismo superavit y voy de menor id a mayor) cada agregar es O(1) ya que el elemento que entra nunca tiene mayor prioridad que su padre. 
             i++;
         }
+
+        // Iniciamos los dos heaps de traslados
         i = 0;
-        ArrayList<TuplaDeInfo> trasladosConInfo = new ArrayList<TuplaDeInfo>();            //Creo el array para luego pasarlo a Heap
-        while (i < traslados.length){                                                      //O(|T|)
+        //Creo el array de todos los traslados para luego pasarlo a Heap
+        ArrayList<TuplaDeInfo> trasladosConInfo = new ArrayList<TuplaDeInfo>();     
+        while (i < traslados.length){                                                      // O(|T|)
             TuplaDeInfo trasladoConPunteros = new TuplaDeInfo(traslados[i],i,i);
-            trasladosConInfo.add(trasladoConPunteros);
+            trasladosConInfo.add(trasladoConPunteros);                                     // O(1)
             i++;
         }
 
-        ComparadorAntiguedad antiguedad = new ComparadorAntiguedad();
-
-        trasladoAntiguedad = new Heap<>(trasladosConInfo,antiguedad);
+        ComparadorAntiguedad antiguedad = new ComparadorAntiguedad();                                                                              // O(1)
+        trasladoAntiguedad = new Heap<>(trasladosConInfo,antiguedad);                                                                              // Pasar de un arreglo no ordenado a un heap tiene complejidad, en este caso, O(|T|)
         i = 0;
-        while (i < trasladoAntiguedad.longitud()) {                                                                                                //pueden existir punteros que no se cambien en el heapify,asi que aca lo cambiamos
-            trasladoAntiguedad.obtener(i).modificarTupla(trasladoAntiguedad.obtener(i).infotras, i, trasladoAntiguedad.obtener(i).redit);
+        while (i < trasladoAntiguedad.longitud()) {                                                                                                // O(|T|)
+            trasladoAntiguedad.obtener(i).modificarTupla(trasladoAntiguedad.obtener(i).infotras, i, trasladoAntiguedad.obtener(i).redit);          // Pueden existir punteros que no se cambien en el heapify, aqui se actualizan todos en O(1) ya que no se ve modificada su prioridad 
             i++;
         }
 
         ComparadorRedituabilidad redituabilidad = new ComparadorRedituabilidad();
-        trasladoRedituabilidad = new Heap<>(trasladoAntiguedad.heapALista(),redituabilidad);                   //obtengo la lista con los punteros acutalizado
+        // Uso la lista con los punteros ya actualizados
+        trasladoRedituabilidad = new Heap<>(trasladoAntiguedad.heapALista(),redituabilidad);                   
         i = 0;
         while (i < trasladoRedituabilidad.longitud()) {
             trasladoRedituabilidad.obtener(i).modificarTupla(trasladoRedituabilidad.obtener(i).infotras, trasladoRedituabilidad.obtener(i).antig,i);
             i++;
         }
 
+        // Iniciamos la variable trasladosYGananciasHistoricas
         trasladosYGananciasHistoricas = new Integer[2];
         trasladosYGananciasHistoricas[0] = 0;
         trasladosYGananciasHistoricas[1] = 0;
     }
 
-    public void registrarTraslados(Traslado[] traslados){
+    public void registrarTraslados(Traslado[] traslados){                                                                               // O(|traslados|(log(|T|)))
         int i = 0;
-        while (i < traslados.length){
+        while (i < traslados.length){                                                                                                   // Siempre realiza |traslados| iteraciones    
             TuplaDeInfo traslado = new TuplaDeInfo(traslados[i], trasladoAntiguedad.longitud(), trasladoRedituabilidad.longitud());
-            trasladoAntiguedad.agregar(traslado);
-            trasladoRedituabilidad.agregar(traslado);
+            trasladoAntiguedad.agregar(traslado);                                                                                       // Por ser un Heap, la complejidad de agregar un elemento es O(log(n))
+            trasladoRedituabilidad.agregar(traslado);                                                                                   // Idem
             i++;
         }
     }
@@ -100,11 +97,11 @@ public class BestEffort {
         return despachar(n, 1, trasladoAntiguedad, trasladoRedituabilidad);
     }
 
-    public int ciudadConMayorSuperavit(){
+    public int ciudadConMayorSuperavit(){                                              // Por estar implementado en un Heap esto lo realiza en O(1)
         return mayorSuperavit.maximo()[0];
     }
 
-    public ArrayList<Integer> ciudadesConMayorGanancia(){
+    public ArrayList<Integer> ciudadesConMayorGanancia(){                              
         return masGanancia;
     }
 
@@ -115,20 +112,20 @@ public class BestEffort {
     public int gananciaPromedioPorTraslado(){
         return trasladosYGananciasHistoricas[1]/trasladosYGananciasHistoricas[0];
     }
-    
+
     private int [] despachar (Integer cantidad ,Integer criterio, Heap<TuplaDeInfo> heapPrincipal, Heap<TuplaDeInfo> heapSecundario){
         int [] res = new int [cantidad];
         int i = 0;
-        while (i < cantidad && (heapPrincipal.longitud() != 0)) {                      // A lo sumo realiza n iteraciones
-            TuplaDeInfo despacho = heapPrincipal.eliminarPosicion(0);                // Por estar implemantado en un Heap esta operacion tinene complejidad O(log(|T|))
+        while (i < cantidad && (heapPrincipal.longitud() != 0)) {                                                                            // A lo sumo realiza n iteraciones
+            TuplaDeInfo despacho = heapPrincipal.eliminarPosicion(0);                                                                      // Por estar implemantado en un Heap esta operacion tinene complejidad O(log(|T|))
             if (criterio == 0){
-                heapSecundario.eliminarPosicion(despacho.antig);                       // O(log(|T|))
+                heapSecundario.eliminarPosicion(despacho.antig);                                                                             // O(log(|T|))
             }
             else {
-                heapSecundario.eliminarPosicion(despacho.redit);                       // O(log(|T|))
+                heapSecundario.eliminarPosicion(despacho.redit);                                                                             // O(log(|T|))
             }
             res[i] = despacho.infotras.id;
-            actualizarBalances(despacho.infotras);                                     // O(log(|C|))
+            actualizarBalances(despacho.infotras);                                                                                           // O(log(|C|))
             i++;
         }
         return res;
@@ -161,13 +158,13 @@ public class BestEffort {
         actualizarPosicionEnSuperavit(t.destino);
     }
     
-    private void actualizarPosicionEnSuperavit(Integer ciudad){                                     
+    private void actualizarPosicionEnSuperavit(Integer ciudad){                                                                     // O(log(|C|))                           
         Integer punteroCiudad = ciudades[ciudad].punteroASuperavit;
         Integer[] ciudadActualizada = new Integer[3];
         ciudadActualizada [0] = punteroCiudad;
         ciudadActualizada [1] = ciudades[ciudad].gananciaHistorica;   
         ciudadActualizada [2] = ciudades[ciudad].perdidaHistorica;
-        mayorSuperavit.modificarElem(punteroCiudad,mayorSuperavit.obtener(punteroCiudad),ciudadActualizada);                        //Modificar una posicion arbitraria en un Heap es O(log(n))
+        mayorSuperavit.modificarElem(punteroCiudad,mayorSuperavit.obtener(punteroCiudad),ciudadActualizada);                        // Modificar la prioridad de un elemento en una posicion arbitraria en un Heap es O(log(n))
     }
 
 }
