@@ -1,7 +1,6 @@
 package aed;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class BestEffort {
     private balanceCiudad[] ciudades;
@@ -23,7 +22,7 @@ public class BestEffort {
         }
     }
 
-    public BestEffort(int cantCiudades, Traslado[] traslados){
+    public BestEffort(int cantCiudades, Traslado[] traslados){                             // O (|T| + |C|) 
         ciudades = new balanceCiudad[cantCiudades];
         masGanancia = new ArrayList<>(cantCiudades);
         masPerdida = new ArrayList<>(cantCiudades);
@@ -50,7 +49,7 @@ public class BestEffort {
         i = 0;
         //Creo el array de todos los traslados para luego pasarlo a Heap
         ArrayList<TuplaDeInfo> trasladosConInfo = new ArrayList<TuplaDeInfo>();     
-        while (i < traslados.length){                                                       // O(|T|)
+        while (i < traslados.length){                                                       // |T| iteraciones
             TuplaDeInfo trasladoConPunteros = new TuplaDeInfo(traslados[i],i,i);
             trasladosConInfo.add(trasladoConPunteros);                                      // O(1)
             i++;
@@ -59,17 +58,17 @@ public class BestEffort {
         ComparadorAntiguedad antiguedad = new ComparadorAntiguedad();                       // O(1)
         trasladoAntiguedad = new Heap<>(trasladosConInfo,antiguedad);                       // Pasar de un arreglo no ordenado a un heap tiene complejidad, en este caso, O(|T|)
         i = 0;
-        while (i < trasladoAntiguedad.longitud()) {                                                                                                // O(|T|)
+        while (i < trasladoAntiguedad.longitud()) {                                                                                                // |T| iteraciones
             trasladoAntiguedad.obtener(i).modificarTupla(trasladoAntiguedad.obtener(i).infotras, i, trasladoAntiguedad.obtener(i).redit);          // Pueden existir punteros que no se cambien en el heapify, aqui se actualizan todos en O(1) ya que no se ve modificada su prioridad 
             i++;
         }
 
         ComparadorRedituabilidad redituabilidad = new ComparadorRedituabilidad();
         // Uso la lista con los punteros ya actualizados
-        trasladoRedituabilidad = new Heap<>(trasladoAntiguedad.heapALista(),redituabilidad);                   
+        trasladoRedituabilidad = new Heap<>(trasladoAntiguedad.heapALista(),redituabilidad);        // O (|T|)            
         i = 0;
-        while (i < trasladoRedituabilidad.longitud()) {
-            trasladoRedituabilidad.obtener(i).modificarTupla(trasladoRedituabilidad.obtener(i).infotras, trasladoRedituabilidad.obtener(i).antig,i);
+        while (i < trasladoRedituabilidad.longitud()) {                                             // |T| iteraciones
+            trasladoRedituabilidad.obtener(i).modificarTupla(trasladoRedituabilidad.obtener(i).infotras, trasladoRedituabilidad.obtener(i).antig,i);        // O(1) debido a que no cambio la prioridad
             i++;
         }
 
