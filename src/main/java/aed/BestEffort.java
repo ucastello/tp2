@@ -93,11 +93,11 @@ public class BestEffort {
     }
 
     public int[] despacharMasRedituables(int n){                                       // O(n(log(|T|) + log(|C|)))
-        return despachar(n, 1);
+        return despachar(n, 0, trasladoRedituabilidad, trasladoAntiguedad);
     }
 
     public int[] despacharMasAntiguos(int n){                                          // O(n(log(|T|) + log(|C|)))
-        return despachar(n, 0);
+        return despachar(n, 1, trasladoAntiguedad, trasladoRedituabilidad);
     }
 
     public int ciudadConMayorSuperavit(){
@@ -114,6 +114,24 @@ public class BestEffort {
 
     public int gananciaPromedioPorTraslado(){
         return trasladosYGananciasHistoricas[1]/trasladosYGananciasHistoricas[0];
+    }
+    
+    private int [] despachar (Integer cantidad ,Integer criterio, Heap<TuplaDeInfo> heapPrincipal, Heap<TuplaDeInfo> heapSecundario){
+        int [] res = new int [cantidad];
+        int i = 0;
+        while (i < cantidad && (heapPrincipal.longitud() != 0)) {                      // A lo sumo realiza n iteraciones
+            TuplaDeInfo despacho = heapPrincipal.eliminarPosicion(0);                // Por estar implemantado en un Heap esta operacion tinene complejidad O(log(|T|))
+            if (criterio == 0){
+                heapSecundario.eliminarPosicion(despacho.antig);                       // O(log(|T|))
+            }
+            else {
+                heapSecundario.eliminarPosicion(despacho.redit);                       // O(log(|T|))
+            }
+            res[i] = despacho.infotras.id;
+            actualizarBalances(despacho.infotras);                                     // O(log(|C|))
+            i++;
+        }
+        return res;
     }
 
     private void actualizarBalances(Traslado t){                                                                //O(log(|C|)) debido a que aparte de actualizarPosicionEnSuperavit los procesos son O(1)
@@ -152,27 +170,4 @@ public class BestEffort {
         mayorSuperavit.modificarElem(punteroCiudad,mayorSuperavit.obtener(punteroCiudad),ciudadActualizada);                        //Modificar una posicion arbitraria en un Heap es O(log(n))
     }
 
-    private int [] despachar (Integer cantidad, Integer criterio){
-        int [] res = new int [cantidad];
-        int i = 0;
-        if (criterio == 0){
-            while (i < cantidad && (trasladoAntiguedad.longitud() != 0)) {                        // A lo sumo realiza n iteraciones
-                TuplaDeInfo despacho = trasladoAntiguedad.eliminarPosicion(0);           // Por estar implemantado en un Heap esta operacion tinene complejidad O(log(|T|))
-                trasladoRedituabilidad.eliminarPosicion(despacho.redit);                   // O(log(|T|))
-                res[i] = despacho.infotras.id;
-                actualizarBalances(despacho.infotras);                                     // O(log(|C|))
-                i++;
-            }
-        } 
-        else {
-            while (i < cantidad && (trasladoRedituabilidad.longitud() != 0)) {                   
-                TuplaDeInfo despacho = trasladoRedituabilidad.eliminarPosicion(0);       
-                trasladoAntiguedad.eliminarPosicion(despacho.antig);                       
-                res[i] = despacho.infotras.id;
-                actualizarBalances(despacho.infotras);                                     
-                i++;
-            }
-        }
-        return res;
-    }
 }
