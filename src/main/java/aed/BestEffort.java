@@ -92,30 +92,12 @@ public class BestEffort {
         }
     }
 
-    public int[] despacharMasRedituables(int n){
-        int [] res = new int [n];
-        int i = 0;
-        while (i < n && (trasladoRedituabilidad.longitud() != 0)) {
-            TuplaDeInfo despacho = trasladoRedituabilidad.eliminarPosicion(0);
-            trasladoAntiguedad.eliminarPosicion(despacho.antig);
-            res[i] = despacho.infotras.id;
-            actualizarBalances(despacho.infotras);
-            i++;
-        }
-        return res;
+    public int[] despacharMasRedituables(int n){                                       // O(n(log(|T|) + log(|C|)))
+        return despachar(n, 1);
     }
 
-    public int[] despacharMasAntiguos(int n){
-        int [] res = new int [n];
-        int i = 0;
-        while (i < n && (trasladoAntiguedad.longitud() != 0)) {
-            TuplaDeInfo despacho = trasladoAntiguedad.eliminarPosicion(0);
-            trasladoRedituabilidad.eliminarPosicion(despacho.redit);
-            res[i] = despacho.infotras.id;
-            actualizarBalances(despacho.infotras);
-            i++;
-        }
-        return res;
+    public int[] despacharMasAntiguos(int n){                                          // O(n(log(|T|) + log(|C|)))
+        return despachar(n, 0);
     }
 
     public int ciudadConMayorSuperavit(){
@@ -134,7 +116,7 @@ public class BestEffort {
         return trasladosYGananciasHistoricas[1]/trasladosYGananciasHistoricas[0];
     }
 
-    private void actualizarBalances(Traslado t){
+    private void actualizarBalances(Traslado t){                                                                //O(log(|C|)) debido a que aparte de actualizarPosicionEnSuperavit los procesos son O(1)
         Integer maximaGanancia = ciudades[masGanancia.get(0)].gananciaHistorica;
         Integer maximaPerdida = ciudades[masPerdida.get(0)].perdidaHistorica;
         ciudades[t.origen].gananciaHistorica += t.gananciaNeta;
@@ -161,12 +143,36 @@ public class BestEffort {
         actualizarPosicionEnSuperavit(t.destino);
     }
     
-    private void actualizarPosicionEnSuperavit(Integer ciudad){
+    private void actualizarPosicionEnSuperavit(Integer ciudad){                                     
         Integer punteroCiudad = ciudades[ciudad].punteroASuperavit;
         Integer[] ciudadActualizada = new Integer[3];
         ciudadActualizada [0] = punteroCiudad;
         ciudadActualizada [1] = ciudades[ciudad].gananciaHistorica;   
         ciudadActualizada [2] = ciudades[ciudad].perdidaHistorica;
-        mayorSuperavit.modificarElem(punteroCiudad,mayorSuperavit.obtener(punteroCiudad),ciudadActualizada);
+        mayorSuperavit.modificarElem(punteroCiudad,mayorSuperavit.obtener(punteroCiudad),ciudadActualizada);                        //Modificar una posicion arbitraria en un Heap es O(log(n))
+    }
+
+    private int [] despachar (Integer cantidad, Integer criterio){
+        int [] res = new int [cantidad];
+        int i = 0;
+        if (criterio == 0){
+            while (i < cantidad && (trasladoAntiguedad.longitud() != 0)) {                        // A lo sumo realiza n iteraciones
+                TuplaDeInfo despacho = trasladoAntiguedad.eliminarPosicion(0);           // Por estar implemantado en un Heap esta operacion tinene complejidad O(log(|T|))
+                trasladoRedituabilidad.eliminarPosicion(despacho.redit);                   // O(log(|T|))
+                res[i] = despacho.infotras.id;
+                actualizarBalances(despacho.infotras);                                     // O(log(|C|))
+                i++;
+            }
+        } 
+        else {
+            while (i < cantidad && (trasladoRedituabilidad.longitud() != 0)) {                   
+                TuplaDeInfo despacho = trasladoRedituabilidad.eliminarPosicion(0);       
+                trasladoAntiguedad.eliminarPosicion(despacho.antig);                       
+                res[i] = despacho.infotras.id;
+                actualizarBalances(despacho.infotras);                                     
+                i++;
+            }
+        }
+        return res;
     }
 }
