@@ -42,7 +42,7 @@ public class BestEffort {
             superavit [1] = 0;        
             superavit [2] = 0;      
             // El primer elemento refiere al id de la ciudad el segundo a ganancia y el tercero a perdida                                            
-            mayorSuperavit.agregar(superavit);                                            // debido a que los elementos van entrando de manera ordenada al heap (todos tienen el mismo superavit y voy de menor id a mayor) cada agregar es O(1) ya que el elemento que entra nunca tiene mayor prioridad que su padre. 
+            mayorSuperavit.agregar(superavit);                                              // debido a que los elementos van entrando de manera ordenada al heap (todos tienen el mismo superavit y voy de menor id a mayor) cada agregar es O(1) ya que el elemento que entra nunca tiene mayor prioridad que su padre. 
             i++;
         }
 
@@ -50,14 +50,14 @@ public class BestEffort {
         i = 0;
         //Creo el array de todos los traslados para luego pasarlo a Heap
         ArrayList<TuplaDeInfo> trasladosConInfo = new ArrayList<TuplaDeInfo>();     
-        while (i < traslados.length){                                                      // O(|T|)
+        while (i < traslados.length){                                                       // O(|T|)
             TuplaDeInfo trasladoConPunteros = new TuplaDeInfo(traslados[i],i,i);
-            trasladosConInfo.add(trasladoConPunteros);                                     // O(1)
+            trasladosConInfo.add(trasladoConPunteros);                                      // O(1)
             i++;
         }
 
-        ComparadorAntiguedad antiguedad = new ComparadorAntiguedad();                                                                              // O(1)
-        trasladoAntiguedad = new Heap<>(trasladosConInfo,antiguedad);                                                                              // Pasar de un arreglo no ordenado a un heap tiene complejidad, en este caso, O(|T|)
+        ComparadorAntiguedad antiguedad = new ComparadorAntiguedad();                       // O(1)
+        trasladoAntiguedad = new Heap<>(trasladosConInfo,antiguedad);                       // Pasar de un arreglo no ordenado a un heap tiene complejidad, en este caso, O(|T|)
         i = 0;
         while (i < trasladoAntiguedad.longitud()) {                                                                                                // O(|T|)
             trasladoAntiguedad.obtener(i).modificarTupla(trasladoAntiguedad.obtener(i).infotras, i, trasladoAntiguedad.obtener(i).redit);          // Pueden existir punteros que no se cambien en el heapify, aqui se actualizan todos en O(1) ya que no se ve modificada su prioridad 

@@ -48,10 +48,10 @@ public class Heap<T> {
             intercambiar(i, ultimo);
             data.remove(ultimo);
             if (!esHoja(i) && hijosConMasPrioridad(i)){
-                bajar(i);
+                bajar(i);                                                           // O(log(n))
             }
             else if (comparador.compare(data.get(i), data.get((i-1)/2)) > 0){              
-                subir(i);
+                subir(i);                                                           // O(log(n))
             }
         }
         ultimo = data.size()-1;
@@ -70,10 +70,10 @@ public class Heap<T> {
         data.add(elem);
         ultimo += 1;
         if (ultimo != 0){
-            subir(ultimo);
+            subir(ultimo);                                                // O(log(n))
         }
     }
-    public void modificarElem (Integer indice, T prioridadAnterior,T prioridadActual){                         //modifica un elemento en O(1) si no se cambia la prioridad, si la cambia la complejidad seria de O(log(n))
+    public void modificarElem (Integer indice, T prioridadAnterior,T prioridadActual){                         // Modifica un elemento en O(1) si no se cambia la prioridad, si la cambia la complejidad seria de O(log(n))
         data.set(indice, prioridadActual);    
         if (comparador.compare(prioridadAnterior, prioridadActual) > 0){
             bajar(indice);
@@ -83,10 +83,10 @@ public class Heap<T> {
         } 
     }
     
-    public ArrayList<T> heapALista(){                                          //Devuelve una lista con elementos con aliasing [en O(n)]             
+    public ArrayList<T> heapALista(){                                          // Devuelve una lista con elementos con aliasing [en O(n)]             
         ArrayList <T> res = new ArrayList<>();
         int i = 0;
-        while ( i < this.data.size()) {                                        // cantidad de elementos-iteraciones
+        while ( i < this.data.size()) {                                        // Cantidad de elementos-iteraciones
             res.add(this.data.get(i));                                         // O(1)
             i++;
         }
