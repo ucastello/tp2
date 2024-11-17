@@ -7,12 +7,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import aed.BestEffort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
 public class HeapTest {
     private Heap<Integer> Heap;
     private Heap<Integer> oldHeap;
+
+    int cantCiudades;
+    Traslado[] listaTraslados;
+    ArrayList<Integer> actual;
 
     @BeforeEach
     void setUp(){
@@ -28,7 +33,6 @@ public class HeapTest {
     info.add(7);
     Heap = new Heap<Integer>(info, comp); 
     oldHeap = new Heap<>(Heap, Integer::compare);
-
     }
 
 
@@ -78,7 +82,7 @@ public class HeapTest {
         ArrayList<Integer> lista = new ArrayList<>();
         Heap<Integer> h = new Heap<Integer>(lista, comparador);
         assertTrue(h.longitud() == 0);
-    }
+    } 
     
     @Test
     void eliminarMaximoUnaVez(){
@@ -119,6 +123,52 @@ public class HeapTest {
         assertFalse(pertenece(Heap, elem2));
         assertTrue(esColaDePrioridad(Heap));
     }
+    @Test
+    void punteros_correctos(){
+        ComparadorAntiguedad comparador = new ComparadorAntiguedad();   
+        Traslado[] traslados = new Traslado[] {
+            new Traslado(1, 3, 4, 1, 7),
+            new Traslado(7, 6, 5, 40, 6),
+            new Traslado(6, 5, 6, 3, 5),
+            new Traslado(2, 2, 1, 41, 4),
+            new Traslado(3, 3, 4, 100, 3),
+            new Traslado(4, 1, 2, 30, 2),
+            new Traslado(5, 2, 1, 90, 1)
+        };
+        ArrayList<TuplaDeInfo> listaTraslados = new ArrayList<>();
+        for (int i = 0; i < traslados.length; i++) {
+            listaTraslados.add(new TuplaDeInfo(traslados[i], i, i));
+        }
+
+        Comparator<TuplaDeInfo> antigComparador = new ComparadorAntiguedad();
+        Comparator<TuplaDeInfo> reditComparador = new ComparadorRedituabilidad();
+        Heap<TuplaDeInfo> heapAntiguedad = new Heap(listaTraslados, antigComparador);
+        Heap<TuplaDeInfo> heapRedituabilidad = new Heap(heapAntiguedad.heapALista(), reditComparador);
+        int i = 0;
+        while (i < heapAntiguedad.longitud()) {                                                                                                
+            heapAntiguedad.obtener(i).modificarTupla(heapAntiguedad.obtener(i).infotras, i, heapAntiguedad.obtener(i).redit);
+            i++;
+        }
+        i = 0;
+        while (i < heapRedituabilidad.longitud()) {
+            heapRedituabilidad.obtener(i).modificarTupla(heapRedituabilidad.obtener(i).infotras, heapRedituabilidad.obtener(i).antig,i);
+            i++;
+        }
+        heapAntiguedad.eliminarPosicion(3);
+        heapAntiguedad.eliminarPosicion(1);
+        heapRedituabilidad.eliminarPosicion(0);
+        heapRedituabilidad.eliminarPosicion(2);
+        i = 0;
+        while (i < heapAntiguedad.longitud()) {
+            TuplaDeInfo traslado = heapAntiguedad.obtener(i);
+            assertEquals(i, traslado.antig);
+            i++;
+        }
+        
+    }
+
+
+
     Integer NCLAVES = 100000;
     private Integer clave(Integer i) {
         return NCLAVES * ((i * i - 100 * i) % NCLAVES) + i;
