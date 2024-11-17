@@ -173,16 +173,10 @@ public class Heap<T> {
 
     private boolean esTraslado (T elem){
         TuplaDeInfo prueba = new TuplaDeInfo(null, null, null);
-        if (elem.getClass() == prueba.getClass()){
-            return true;
-        }
-        return false;
+        return (elem.getClass() == prueba.getClass());
     }
     private boolean ordenadoPorAntiguedad (){
         ComparadorAntiguedad ejemplo = new ComparadorAntiguedad();
-        if (this.comparador.getClass() == ejemplo.getClass()){
-            return true;
-        }
-        return false;
+    return (this.comparador.getClass() == ejemplo.getClass());
     }
 }
